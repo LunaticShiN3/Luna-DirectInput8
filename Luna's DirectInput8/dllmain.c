@@ -4,7 +4,7 @@
 #define PLUGIN_NAME "Luna's DirectInput8"
 #define PLUGIN_VERSION "1.0.0"
 #define PLUGIN_NAMEVER PLUGIN_NAME " v" PLUGIN_VERSION
-#define PLUGIN_REPO "https://github.com/LunaticShiN3/Luna's_DirectInput8"
+#define PLUGIN_REPO "https://github.com/LunaticShiN3/Luna-DirectInput8"
 #define DIRECTINPUT_VERSION 0x0800
 
 #include "zilmar_controller_1.0.h"
@@ -34,7 +34,7 @@ EXPORT void CALL DllAbout(HWND hParent)
 {
     MessageBoxA(
         hParent,
-        "DirectInput8 plugin designed as a Jabo alternative for keyboard players\n"
+        "DirectInput8 plugin designed as a Jabo alternative for keyboard\n"
         "Made by ShiN3\n"
         "Version " PLUGIN_VERSION "\n"
         "Compiled on " __DATE__ "\n\n"
