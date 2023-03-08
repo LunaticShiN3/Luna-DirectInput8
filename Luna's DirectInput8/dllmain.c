@@ -5,10 +5,9 @@
 #define PLUGIN_VERSION "1.0.0"
 #define PLUGIN_NAMEVER PLUGIN_NAME " v" PLUGIN_VERSION
 #define PLUGIN_REPO "https://github.com/LunaticShiN3/Luna-DirectInput8"
-#define DIRECTINPUT_VERSION 0x0800
 
 #include "zilmar_controller_1.0.h"
-#include <dinput.h>
+#include "directinput.h"
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -64,7 +63,7 @@ EXPORT void CALL RomClosed(void) {
 }
 
 EXPORT void CALL RomOpen(void) {
-    //stuff here later
+    void DInputInit(hModule);
 }
 
 /*EXPORT void CALL WM_KeyDown(WPARAM wParam, LPARAM lParam) {

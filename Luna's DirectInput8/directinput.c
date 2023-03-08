@@ -1,15 +1,27 @@
-#include "dllmain.c"
 #include "directinput.h"
 
-#define DIRECTINPUT_VERSION 0x0800
+IDirectInput8* interfacePointer;
+LPDIRECTINPUTDEVICE8 lpdiKeyboard;
 
-HRESULT DirectInput8Create( //Creates a DirectInput8 object.
-	hModule,
-	DIRECTINPUT_VERSION,
-	IID_IDirectInput8A,
-	&(*interfacePointer),
-	NULL
-);
+void DInputInit(HINSTANCE hinst) {
+	HRESULT result= DirectInput8Create( //Creates a DirectInput8 object.
+		hinst, //this has to be hModule
+		DIRECTINPUT_VERSION,
+		IID_IDirectInput8A,
+		(LPVOID*)&interfacePointer,
+		NULL
+	);
 
-LPDIRECTINPUTDEVICE8  lpdiKeyboard; //Creates a keyboard DirectInput device.
-interfacePointer->CreateDevice(GUID_SysKeyboard, &lpdiKeyboard, NULL);
+	interfacePointer->CreateDevice( //Creates a keyboard DirectInput device.
+		GUID_SysKeyboard,
+		&lpdiKeyboard,
+		NULL
+	);
+
+	lpdiKeyboard->SetCooperativeLevel(hwnd, //Sets cooperative level. Nonexclusive, no background input. Might add settings later.
+		DISCL_NONEXCLUSIVE | DISCL_FOREGROUND); //Add DISCL_NOWINKEY next to exclusivity to disable Windows key.
+
+	result= lpdiKeyboard->SetDataFormat(c_dfDIKeyboard); //Sets data format
+
+	result= lpdiKeyboard->Acquire(); //Acquires input device
+}
