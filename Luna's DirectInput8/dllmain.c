@@ -54,9 +54,48 @@ EXPORT void CALL GetDllInfo(PLUGIN_INFO* PluginInfo) {
     );
 }
 
-/*EXPORT void CALL GetKeys(int Control, BUTTONS* Keys) {
-    //stuff here later
-}*/
+
+static byte keybindDpadRight = 0x27; //Ñ
+static byte keybindDpadLeft = 0x26; //L
+static byte keybindDpadDown = 0x34; //.
+static byte keybindDpadUp = 0x19; //P
+static byte keybindStart = 0x1C; //Enter
+static byte keybindZ = 0x2C; //Z
+static byte keybindB = 0x2E; //C
+static byte keybindA = 0x2D; //X
+static byte keybindCRight = 0x4D; //Numpad6
+static byte keybindCLeft = 0x4B; //Numpad4
+static byte keybindCDown = 0x50; //Numpad2
+static byte keybindCUp = 0x48; //Numpad8
+static byte keybindR = 0x1F; //S
+static byte keybindL = 0x1E; //A
+
+EXPORT void CALL GetKeys(int Control, BUTTONS* Keys) {
+    Keys->R_DPAD = DInputGetKey(keybindDpadRight);
+    Keys->L_DPAD = DInputGetKey(keybindDpadLeft);
+    Keys->D_DPAD = DInputGetKey(keybindDpadDown);
+    Keys->U_DPAD = DInputGetKey(keybindDpadUp);
+    Keys->START_BUTTON = DInputGetKey(keybindStart);
+    Keys->Z_TRIG = DInputGetKey(keybindZ);
+    Keys->B_BUTTON = DInputGetKey(keybindB);
+    Keys->A_BUTTON = DInputGetKey(keybindA);
+    Keys->R_CBUTTON = DInputGetKey(keybindCRight);
+    Keys->L_CBUTTON = DInputGetKey(keybindCLeft);
+    Keys->D_CBUTTON = DInputGetKey(keybindCDown);
+    Keys->U_CBUTTON = DInputGetKey(keybindCUp);
+    Keys->R_TRIG = DInputGetKey(keybindR);
+    Keys->L_TRIG = DInputGetKey(keybindL);
+}
+
+EXPORT void CALL InitiateControllers(HWND hMainWindow, CONTROL Controls[4])
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        Controls[i].Present = FALSE; //Enables controller 1 only. Might change later.
+        Controls[i].RawData = FALSE;
+    }
+    Controls[0].Present = TRUE;
+}
 
 EXPORT void CALL RomClosed(void) {
     //required for PJ64 2.x and newer
