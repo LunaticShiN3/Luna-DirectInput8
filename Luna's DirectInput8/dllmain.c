@@ -102,7 +102,7 @@ EXPORT void CALL RomClosed(void) {
 }
 
 EXPORT void CALL RomOpen(void) {
-    void DInputInit(hModule);
+    void DInputInit(hModule, hParent);
 }
 
 /*EXPORT void CALL WM_KeyDown(WPARAM wParam, LPARAM lParam) {

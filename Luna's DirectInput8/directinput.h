@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <dinput.h>
 
-void DInputInit(HINSTANCE hinst);
+void DInputInit(HINSTANCE hinst, HWND hwnd);
 unsigned DInputGetKey(byte KeyCode);
 
 #endif

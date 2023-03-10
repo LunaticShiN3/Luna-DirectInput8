@@ -2,11 +2,11 @@
 #include "pch.h"
 #include "directinput.h"
 
-IDirectInput8* interfacePointer;
-LPDIRECTINPUTDEVICE8 lpdiKeyboard;
+IDirectInput8A* interfacePointer;
+LPDIRECTINPUTDEVICE8A lpdiKeyboard;
 byte deviceState[256];
 
-void DInputInit(HINSTANCE hinst) {
+void DInputInit(HINSTANCE hinst, HWND hwnd) {
 	HRESULT result= DirectInput8Create( //Creates a DirectInput8 object.
 		hinst, //this has to be hModule
 		DIRECTINPUT_VERSION,
