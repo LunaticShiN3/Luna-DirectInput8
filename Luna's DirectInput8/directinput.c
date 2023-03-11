@@ -15,21 +15,22 @@ void DInputInit(HINSTANCE hinst, HWND hwnd) {
 		NULL
 	);
 
-	interfacePointer->CreateDevice( //Creates a keyboard DirectInput device.
+	IDirectInput8_CreateDevice( //Creates a keyboard DirectInput device.
+		interfacePointer,
 		&GUID_SysKeyboard,
 		&lpdiKeyboard,
 		NULL
 	);
 
-	lpdiKeyboard->SetCooperativeLevel(hwnd, //Sets cooperative level. Nonexclusive, no background input. Might add settings later. Figure out how to set hwnd https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ee416848(v=vs.85)?
+	IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, hwnd, //Sets cooperative level. Nonexclusive, no background input. Might add settings later. Figure out how to set hwnd https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ee416848(v=vs.85)?
 		DISCL_NONEXCLUSIVE | DISCL_FOREGROUND); //Add DISCL_NOWINKEY next to exclusivity to disable Windows key.
 
-	result= lpdiKeyboard->SetDataFormat(c_dfDIKeyboard); //Sets data format
+	result= IDirectInputDevice8_SetDataFormat(lpdiKeyboard, &c_dfDIKeyboard); //Sets data format
 
-	result= lpdiKeyboard->Acquire(); //Acquires input device
+	result= IDirectInputDevice8_Acquire(lpdiKeyboard); //Acquires input device
 }
 
 unsigned DInputGetKey(byte KeyCode) {
-	HRESULT result= lpdiKeyboard->GetDeviceState((sizeof(deviceState)), (LPVOID*)&deviceState);
+	HRESULT result= IDirectInputDevice8_GetDeviceState(lpdiKeyboard, (sizeof(deviceState)), (LPVOID*)&deviceState);
 	return (deviceState[KeyCode] >> 7);
 }
