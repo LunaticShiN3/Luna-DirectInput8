@@ -9,11 +9,14 @@
 #include "zilmar_controller_1.0.h"
 #include "directinput.h"
 
+HMODULE hModuleVariable;
+
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
                      )
 {
+    hModuleVariable = hModule;
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
@@ -70,21 +73,87 @@ static byte keybindCUp = 0x48; //Numpad8
 static byte keybindR = 0x1F; //S
 static byte keybindL = 0x1E; //A
 
+static byte keybindRight = 0xCD; //Right arrow key
+static byte keybindLeft = 0xCB; //Left arrow key
+static byte keybindDown = 0xD0; //Down arrow key
+static byte keybindUp = 0xC8; //Up arrow key
+
+static byte rangeCardinalX = 126;
+static byte rangeCardinalY = 126; //These need to be limited to 127 max.
+static byte rangeDiagonalX = 90;
+static byte rangeDiagonalY = 89;
+
+byte integerX;
+byte integerY;
+
+float floatX;
+float floatY;
+
+typedef struct Modifier {
+    byte keybind;
+    float multiplierX;
+    float multiplierY;
+} Modifier;
+
+struct Modifier modifiers[50];
+
+Modifier modifers[50] = {
+  {0x2A, 0.2, 0.2},
+  {0x39, 0.87, 0.5},
+  {0x2F, 0.5, 0.87}
+};
+
 EXPORT void CALL GetKeys(int Control, BUTTONS* Keys) {
-    Keys->R_DPAD = DInputGetKey(keybindDpadRight);
-    Keys->L_DPAD = DInputGetKey(keybindDpadLeft);
-    Keys->D_DPAD = DInputGetKey(keybindDpadDown);
-    Keys->U_DPAD = DInputGetKey(keybindDpadUp);
-    Keys->START_BUTTON = DInputGetKey(keybindStart);
-    Keys->Z_TRIG = DInputGetKey(keybindZ);
-    Keys->B_BUTTON = DInputGetKey(keybindB);
-    Keys->A_BUTTON = DInputGetKey(keybindA);
-    Keys->R_CBUTTON = DInputGetKey(keybindCRight);
-    Keys->L_CBUTTON = DInputGetKey(keybindCLeft);
-    Keys->D_CBUTTON = DInputGetKey(keybindCDown);
-    Keys->U_CBUTTON = DInputGetKey(keybindCUp);
-    Keys->R_TRIG = DInputGetKey(keybindR);
-    Keys->L_TRIG = DInputGetKey(keybindL);
+    DInputGetKeys();
+    Keys->R_DPAD = (deviceState[keybindDpadRight] >> 7);
+    Keys->L_DPAD = (deviceState[keybindDpadLeft] >> 7);
+    Keys->D_DPAD = (deviceState[keybindDpadDown] >> 7);
+    Keys->U_DPAD = (deviceState[keybindDpadUp] >> 7);
+    Keys->START_BUTTON = (deviceState[keybindStart] >> 7);
+    Keys->Z_TRIG = (deviceState[keybindZ] >> 7);
+    Keys->B_BUTTON = (deviceState[keybindB] >> 7);
+    Keys->A_BUTTON = (deviceState[keybindA] >> 7);
+    Keys->R_CBUTTON = (deviceState[keybindCRight] >> 7);
+    Keys->L_CBUTTON = (deviceState[keybindCLeft] >> 7);
+    Keys->D_CBUTTON = (deviceState[keybindCDown] >> 7);
+    Keys->U_CBUTTON = (deviceState[keybindCUp] >> 7);
+    Keys->R_TRIG = (deviceState[keybindR] >> 7);
+    Keys->L_TRIG = (deviceState[keybindL] >> 7);
+
+    if (deviceState[keybindLeft] >> 7) {
+        integerX = -1;
+    }
+    else if (deviceState[keybindRight] >> 7) {
+        integerX = 1;
+    }
+    else {
+        integerX = 0;
+    }
+    if (deviceState[keybindDown] >> 7) {
+        integerY = -1;
+    }
+    else if (deviceState[keybindUp] >> 7) {
+        integerY = 1;
+    }
+    else {
+        integerY = 0;
+    }
+
+    if (integerX != 0 && integerY != 0) {
+        Keys->Y_AXIS = integerX * rangeDiagonalX;
+        Keys->X_AXIS = integerY * rangeDiagonalY;
+    }
+    else {
+        Keys->Y_AXIS = integerX * rangeCardinalX;
+        Keys->X_AXIS = integerY * rangeCardinalY;
+    }
+
+    for (int i = 0; i < sizeof(modifiers) / sizeof(Modifier); i++) {
+        if (deviceState[modifiers[i].keybind] >> 7) {
+            Keys->Y_AXIS *= modifiers[i].multiplierX; //X and Y axis are swapped because of course they are????
+            Keys->X_AXIS *= modifiers[i].multiplierY;
+        }
+    }
 }
 
 EXPORT void CALL InitiateControllers(HWND hMainWindow, CONTROL Controls[4])
@@ -102,7 +171,8 @@ EXPORT void CALL RomClosed(void) {
 }
 
 EXPORT void CALL RomOpen(void) {
-    void DInputInit(hModule, hParent);
+    HWND activeWindow = GetActiveWindow();
+    DInputInit(hModuleVariable, activeWindow);
 }
 
 /*EXPORT void CALL WM_KeyDown(WPARAM wParam, LPARAM lParam) {

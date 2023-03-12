@@ -4,9 +4,12 @@
 #define DIRECTINPUT_VERSION 0x0800
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <dinput.h>
 
 void DInputInit(HINSTANCE hinst, HWND hwnd);
-unsigned DInputGetKey(byte KeyCode);
+void DInputGetKeys(void);
+
+byte deviceState[256];
 
 #endif
