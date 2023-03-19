@@ -1,13 +1,18 @@
 #include "pch.h"
 #include "directinput.h"
+#include <shlwapi.h>
 
 IDirectInput8A* interfacePointer;
 LPDIRECTINPUTDEVICE8A lpdiKeyboard;
 FILE* fptr;
 errno_t err;
+LPSTR filePath;
 
 void DInputInit(HINSTANCE hinst, HWND hwnd) {
-	err = fopen_s(&fptr, ".\\Logs\\Lunalog.txt", "w");
+	GetModuleFileNameA(hinst, filePath, MAX_PATH);
+	PathRemoveFileSpecA(filePath);
+	PathCombineA(filePath, filePath, "Logs\\Lunalog.txt");
+	err = fopen_s(&fptr, filePath, "w");
 
 	HRESULT result= DirectInput8Create( //Creates a DirectInput8 object.
 		hinst, //this has to be hModule
@@ -17,7 +22,8 @@ void DInputInit(HINSTANCE hinst, HWND hwnd) {
 		NULL
 	);
 
-	switch (result) {
+	if (fptr != 0) {
+		switch (result) {
 		case DI_OK:
 			fprintf(fptr, "DirectInput8Create DI_OK\n");
 			break;
@@ -33,6 +39,7 @@ void DInputInit(HINSTANCE hinst, HWND hwnd) {
 		case DIERR_OUTOFMEMORY:
 			fprintf(fptr, "DirectInput8Create DIERR_OUTOFMEMORY\n");
 			break;
+		}
 	}
 
 	IDirectInput8_CreateDevice( //Creates a keyboard DirectInput device.
@@ -47,39 +54,43 @@ void DInputInit(HINSTANCE hinst, HWND hwnd) {
 
 	result= IDirectInputDevice8_SetDataFormat(lpdiKeyboard, &c_dfDIKeyboard); //Sets data format
 
-	switch (result) {
-	case DI_OK:
-		fprintf(fptr, "SetDataFormat DI_OK\n");
-		break;
-	case DIERR_ACQUIRED:
-		fprintf(fptr, "SetDataFormat DIERR_ACQUIRED\n");
-		break;
-	case DIERR_INVALIDPARAM:
-		fprintf(fptr, "SetDataFormat DIERR_INVALIDPARAM\n");
-		break;
-	case DIERR_NOTINITIALIZED:
-		fprintf(fptr, "SetDataFormat DIERR_NOTINITIALIZED\n");
-		break;
+	if (fptr != 0) {
+		switch (result) {
+		case DI_OK:
+			fprintf(fptr, "SetDataFormat DI_OK\n");
+			break;
+		case DIERR_ACQUIRED:
+			fprintf(fptr, "SetDataFormat DIERR_ACQUIRED\n");
+			break;
+		case DIERR_INVALIDPARAM:
+			fprintf(fptr, "SetDataFormat DIERR_INVALIDPARAM\n");
+			break;
+		case DIERR_NOTINITIALIZED:
+			fprintf(fptr, "SetDataFormat DIERR_NOTINITIALIZED\n");
+			break;
+		}
 	}
 
 	result= IDirectInputDevice8_Acquire(lpdiKeyboard); //Acquires input device
 
-	switch (result) {
-	case DI_OK:
-		fprintf(fptr, "Acquire DI_OK\n");
-		break;
-	case DIERR_INVALIDPARAM:
-		fprintf(fptr, "Acquire DIERR_INVALIDPARAM\n");
-		break;
-	case DIERR_NOTINITIALIZED:
-		fprintf(fptr, "Acquire DIERR_NOTINITIALIZED\n");
-		break;
-	case DIERR_OTHERAPPHASPRIO:
-		fprintf(fptr, "Acquire DIERR_OTHERAPPHASPRIO\n");
-		break;
+	if (fptr != 0) {
+		switch (result) {
+		case DI_OK:
+			fprintf(fptr, "Acquire DI_OK\n");
+			break;
+		case DIERR_INVALIDPARAM:
+			fprintf(fptr, "Acquire DIERR_INVALIDPARAM\n");
+			break;
+		case DIERR_NOTINITIALIZED:
+			fprintf(fptr, "Acquire DIERR_NOTINITIALIZED\n");
+			break;
+		case DIERR_OTHERAPPHASPRIO:
+			fprintf(fptr, "Acquire DIERR_OTHERAPPHASPRIO\n");
+			break;
+		}
+		fflush(fptr);
+		fclose(fptr);
 	}
-	fflush(fptr);
-	fclose(fptr);
 }
 
 void DInputGetKeys(void) {

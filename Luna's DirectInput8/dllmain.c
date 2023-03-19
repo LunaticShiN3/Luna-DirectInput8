@@ -62,13 +62,13 @@ EXPORT void CALL GetDllInfo(PLUGIN_INFO* PluginInfo) {
     );
 }
 
-byte integerX;
-byte integerY;
-
-float floatX;
-float floatY;
-
 EXPORT void CALL GetKeys(int Control, BUTTONS* Keys) {
+    byte integerX;
+    byte integerY;
+
+    float floatX;
+    float floatY;
+
     DInputGetKeys();
     Keys->R_DPAD = (deviceState[config.keybindDpadRight] >> 7);
     Keys->L_DPAD = (deviceState[config.keybindDpadLeft] >> 7);
