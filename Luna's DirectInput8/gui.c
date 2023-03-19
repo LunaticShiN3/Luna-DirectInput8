@@ -13,7 +13,9 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
         return FALSE;
     }
 
-}void OpenDialog(HINSTANCE hinst, HWND parent)
+}
+
+void OpenDialog(HINSTANCE hinst, HWND parent)
 {
     DialogBox(hinst, MAKEINTRESOURCE(IDD_DIALOG1), parent, DlgProc);
 }

@@ -47,8 +47,8 @@ EXPORT void CALL DllAbout(HWND hParent) {
     );
 }
 
-EXPORT void CALL DllConfig(HWND HParent) {
-    void OpenDialog(hModule, hParent);
+EXPORT void CALL DllConfig(HWND hParent) {
+    OpenDialog(hModuleVariable, hParent);
 }
 
 EXPORT void CALL GetDllInfo(PLUGIN_INFO* PluginInfo) {
