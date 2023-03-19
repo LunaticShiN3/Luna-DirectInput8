@@ -6,12 +6,14 @@ IDirectInput8A* interfacePointer;
 LPDIRECTINPUTDEVICE8A lpdiKeyboard;
 FILE* fptr;
 errno_t err;
-LPSTR filePath;
+char filePath[MAX_PATH];
 
 void DInputInit(HINSTANCE hinst, HWND hwnd) {
-	GetModuleFileNameA(hinst, filePath, MAX_PATH);
+	GetModuleFileNameA(NULL, filePath, sizeof(filePath));
 	PathRemoveFileSpecA(filePath);
-	PathCombineA(filePath, filePath, "Logs\\Lunalog.txt");
+	PathCombineA(filePath, filePath, "Logs"); //Creates logs folder, required for PJ64 1.6
+	CreateDirectory(filePath, NULL);
+	PathCombineA(filePath, filePath, "Lunalog.txt"); //Creates or opens log file
 	err = fopen_s(&fptr, filePath, "w");
 
 	HRESULT result= DirectInput8Create( //Creates a DirectInput8 object.
