@@ -7,7 +7,7 @@ FILE* fptr;
 errno_t err;
 
 void DInputInit(HINSTANCE hinst, HWND hwnd) {
-	err = fopen_s(&fptr, "C:\\Users\\Shuri\\Documents\\Project64 3.0\\Project64 3.0.1-N-v1\\Logs\\Lunalog.txt", "w");
+	err = fopen_s(&fptr, ".\\Logs\\Lunalog.txt", "w");
 
 	HRESULT result= DirectInput8Create( //Creates a DirectInput8 object.
 		hinst, //this has to be hModule
@@ -82,7 +82,7 @@ void DInputInit(HINSTANCE hinst, HWND hwnd) {
 	fclose(fptr);
 }
 
-void DInputGetKeys(byte KeyCode) {
+void DInputGetKeys(void) {
 	if (lpdiKeyboard != NULL) {
 		HRESULT result = IDirectInputDevice8_GetDeviceState(lpdiKeyboard, (sizeof(deviceState)), (LPVOID*)&deviceState);
 	}
