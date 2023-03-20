@@ -37,8 +37,9 @@ typedef struct Config {
     Modifier modifiers[50];
 } Config;
 
+Config config;
 
-static Config config = {
+Config defaultConfig = {
     .configVersion = 0x0100,
 
     .keybindDpadRight = 0x27, //Ñ
@@ -60,15 +61,19 @@ static Config config = {
     .keybindLeft = 0xCB, //Left arrow key
     .keybindDown = 0xD0, //Down arrow key
     .keybindUp = 0xC8, //Up arrow key
-    
+
     .rangeCardinalX = 126,
     .rangeCardinalY = 126, //These need to be limited to 127 max.
     .rangeDiagonalX = 90,
     .rangeDiagonalY = 89,
-    
+
     .modifiers = {
         {0x2A, 0.2, 0.2},
         {0x39, 0.87, 0.5},
         {0x2F, 0.5, 0.87}
-     }
-};
+    }
+}
+
+void saveConfig(void);
+void loadConfig(void);
+void restoreDefaults(void);

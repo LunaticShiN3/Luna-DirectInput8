@@ -1,40 +1,41 @@
 #include "pch.h"
 #include "config.h"
+#include <shlwapi.h>
 
-typedef struct
-{
-    const enum { CONF_INT, CONF_BYTE, CONF_FLOAT } type;
-    void const* ptr;
-    const char* name;
-} conf_data_t;
+FILE* cptr;
+errno_t cfgerr;
+char configPath[MAX_PATH];
 
-static conf_data_t conf_data[] =
-{
-    {CONF_INT, &config.configVersion, "Config_Version"},
+void saveConfig(void) {
+	GetModuleFileNameA(NULL, configPath, sizeof(configPath));
+	PathRemoveFileSpecA(configPath);
+	PathCombineA(configPath, configPath, "Config"); //Creates config folder, required for PJ64 1.6
+	CreateDirectory(configPath, NULL);
+	PathCombineA(configPath, configPath, "Lunaconfig.bin"); //Creates or opens config file
+	cfgerr = fopen_s(&cptr, configPath, "wb");
 
-    {CONF_BYTE, &config.keybindDpadRight, "DPad_Right"},
-    {CONF_BYTE, &config.keybindDpadLeft, "DPad_Left"},
-    {CONF_BYTE, &config.keybindDpadDown, "DPad_Down"},
-    {CONF_BYTE, &config.keybindDpadUp, "DPad_Up"},
-    {CONF_BYTE, &config.keybindStart, "Start"},
-    {CONF_BYTE, &config.keybindZ, "Z"},
-    {CONF_BYTE, &config.keybindB, "B"},
-    {CONF_BYTE, &config.keybindA, "A"},
-    {CONF_BYTE, &config.keybindCRight, "C_Right"},
-    {CONF_BYTE, &config.keybindCLeft, "C_Left"},
-    {CONF_BYTE, &config.keybindCDown, "C_Down"},
-    {CONF_BYTE, &config.keybindCUp, "C_Up"},
-    {CONF_BYTE, &config.keybindR, "R"},
-    {CONF_BYTE, &config.keybindL, "L"},
+	fwrite(&config, 1, sizeof(config), &cptr);
+	fflush(cptr);
+	fclose(cptr);
+}
 
-    {CONF_BYTE, &config.keybindRight, "Analog_Right"},
-    {CONF_BYTE, &config.keybindLeft, "Analog_Left"},
-    {CONF_BYTE, &config.keybindDown, "Analog_Down"},
-    {CONF_BYTE, &config.keybindUp, "Analog_Up"},
+void loadConfig(void) {
+	GetModuleFileNameA(NULL, configPath, sizeof(configPath));
+	PathRemoveFileSpecA(configPath);
+	PathCombineA(configPath, configPath, "Config"); //Creates config folder, required for PJ64 1.6
+	CreateDirectory(configPath, NULL);
+	PathCombineA(configPath, configPath, "Lunaconfig.bin"); //Creates or opens config file
+	cfgerr = fopen_s(&cptr, configPath, "rb");
 
-    {CONF_BYTE, &config.rangeCardinalX, "Cardinal_Range_X"},
-    {CONF_BYTE, &config.rangeCardinalY, "Cardinal_Range_Y"},
-    {CONF_BYTE, &config.rangeDiagonalX, "Diagonal_Range_X"},
-    {CONF_BYTE, &config.rangeDiagonalY, "Diagonal_Range_Y"},
+	if (cfgerr) {
+		restoreDefaults();
+	}
+	else {
+		fread(&config, 1, sizeof(config), &cptr);
+		fclose(cptr);
+	}
+}
 
-};
+void restoreDefaults(void) {
+	config = defaultConfig;
+}
