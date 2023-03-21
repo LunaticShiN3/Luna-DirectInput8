@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "directinput.h"
+#include "config.h"
 #include <shlwapi.h>
 
 IDirectInput8A* interfacePointer;
@@ -12,7 +13,7 @@ void DInputInit(HINSTANCE hinst, HWND hwnd) {
 	GetModuleFileNameA(NULL, filePath, sizeof(filePath));
 	PathRemoveFileSpecA(filePath);
 	PathCombineA(filePath, filePath, "Logs"); //Creates logs folder, required for PJ64 1.6
-	CreateDirectory(filePath, NULL);
+	CreateDirectoryA(filePath, NULL);
 	PathCombineA(filePath, filePath, "Lunalog.txt"); //Creates or opens log file
 	err = fopen_s(&fptr, filePath, "w");
 
@@ -93,10 +94,15 @@ void DInputInit(HINSTANCE hinst, HWND hwnd) {
 		fflush(fptr);
 		fclose(fptr);
 	}
+
+	loadConfig();
 }
 
-void DInputGetKeys(void) {
+void DInputGetKeys(HINSTANCE hinst, HWND hwnd) {
 	if (lpdiKeyboard != NULL) {
 		HRESULT result = IDirectInputDevice8_GetDeviceState(lpdiKeyboard, (sizeof(deviceState)), (LPVOID*)&deviceState);
+		if (result == DIERR_INPUTLOST) {
+			IDirectInputDevice8_Acquire(lpdiKeyboard);
+		}
 	}
 }

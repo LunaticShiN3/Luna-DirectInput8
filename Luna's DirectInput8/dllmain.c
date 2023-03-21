@@ -12,6 +12,7 @@
 #include "gui.h"
 
 HMODULE hModuleVariable;
+HWND hMainWindowVariable;
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -69,7 +70,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys) {
     float floatX;
     float floatY;
 
-    DInputGetKeys();
+    DInputGetKeys(hModuleVariable, hMainWindowVariable);
     Keys->R_DPAD = (deviceState[config.keybindDpadRight] >> 7);
     Keys->L_DPAD = (deviceState[config.keybindDpadLeft] >> 7);
     Keys->D_DPAD = (deviceState[config.keybindDpadDown] >> 7);
@@ -129,6 +130,8 @@ EXPORT void CALL InitiateControllers(HWND hMainWindow, CONTROL Controls[4])
         Controls[i].RawData = FALSE;
     }
     Controls[0].Present = TRUE;
+
+    hMainWindowVariable = hMainWindow;
 }
 
 EXPORT void CALL RomClosed(void) {
@@ -136,8 +139,7 @@ EXPORT void CALL RomClosed(void) {
 }
 
 EXPORT void CALL RomOpen(void) {
-    HWND activeWindow = GetActiveWindow();
-    DInputInit(hModuleVariable, activeWindow);
+    DInputInit(hModuleVariable, hMainWindowVariable);
 }
 
 /*EXPORT void CALL WM_KeyDown(WPARAM wParam, LPARAM lParam) {

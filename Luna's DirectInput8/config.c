@@ -10,7 +10,7 @@ void saveConfig(void) {
 	GetModuleFileNameA(NULL, configPath, sizeof(configPath));
 	PathRemoveFileSpecA(configPath);
 	PathCombineA(configPath, configPath, "Config"); //Creates config folder, required for PJ64 1.6
-	CreateDirectory(configPath, NULL);
+	CreateDirectoryA(configPath, NULL);
 	PathCombineA(configPath, configPath, "Lunaconfig.bin"); //Creates or opens config file
 	cfgerr = fopen_s(&cptr, configPath, "wb");
 
@@ -23,7 +23,7 @@ void loadConfig(void) {
 	GetModuleFileNameA(NULL, configPath, sizeof(configPath));
 	PathRemoveFileSpecA(configPath);
 	PathCombineA(configPath, configPath, "Config"); //Creates config folder, required for PJ64 1.6
-	CreateDirectory(configPath, NULL);
+	CreateDirectoryA(configPath, NULL);
 	PathCombineA(configPath, configPath, "Lunaconfig.bin"); //Creates or opens config file
 	cfgerr = fopen_s(&cptr, configPath, "rb");
 

@@ -39,7 +39,7 @@ typedef struct Config {
 
 Config config;
 
-Config defaultConfig = {
+static Config defaultConfig = {
     .configVersion = 0x0100,
 
     .keybindDpadRight = 0x27, //Ñ
@@ -72,7 +72,7 @@ Config defaultConfig = {
         {0x39, 0.87, 0.5},
         {0x2F, 0.5, 0.87}
     }
-}
+};
 
 void saveConfig(void);
 void loadConfig(void);
