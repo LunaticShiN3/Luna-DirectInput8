@@ -24,7 +24,7 @@ void loadConfig(void) {
 	PathRemoveFileSpecA(configPath);
 	PathCombineA(configPath, configPath, "Config"); //Creates config folder, required for PJ64 1.6
 	CreateDirectoryA(configPath, NULL);
-	PathCombineA(configPath, configPath, "Lunaconfig.bin"); //Creates or opens config file
+	PathCombineA(configPath, configPath, "Lunaconfig.bin"); //Opens config file to read
 	cfgerr = fopen_s(&cptr, configPath, "rb");
 
 	if (cfgerr) {
