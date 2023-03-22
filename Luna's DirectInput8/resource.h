@@ -3,11 +3,12 @@
 // Used by Luna's DirectInput8.rc
 //
 #define IDD_DIALOG1                     101
-#define IDC_EDIT1                       1002
-#define IDC_EDIT2                       1003
-#define IDC_EDIT3                       1004
+#define IDC_CARDINALX                   1002
+#define IDC_CARDINALY                   1003
+#define IDC_DIAGONALX                   1004
 #define IDC_EDIT4                       1005
-#define IDC_BUTTON1                     1012
+#define IDC_DIAGONALY                   1005
+#define IDC_RESTOREDEFAULTS             1012
 #define IDC_LIST3                       1035
 #define IDC_BUTTON2                     1036
 #define IDC_BUTTON3                     1037
