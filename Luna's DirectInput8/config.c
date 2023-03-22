@@ -14,7 +14,7 @@ void saveConfig(void) {
 	PathCombineA(configPath, configPath, "Lunaconfig.bin"); //Creates or opens config file
 	cfgerr = fopen_s(&cptr, configPath, "wb");
 
-	fwrite(&config, 1, sizeof(config), &cptr);
+	fwrite(&config, sizeof(config), 1, cptr);
 	fflush(cptr);
 	fclose(cptr);
 }
@@ -31,7 +31,7 @@ void loadConfig(void) {
 		restoreDefaults();
 	}
 	else {
-		fread(&config, 1, sizeof(config), &cptr);
+		fread(&config, sizeof(config), 1, cptr);
 		fclose(cptr);
 	}
 }

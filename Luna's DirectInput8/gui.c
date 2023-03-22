@@ -4,6 +4,8 @@
 #include "config.h"
 #include <windowsx.h>
 
+HWND hDlgItem;
+
 BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -32,35 +34,19 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
             break;
 
         case IDC_CARDINALX:
-            if (Edit_GetModify(hwndDlg)) {
-                char lpch;
-                Edit_GetText(hwndDlg, &lpch, 4);
-                config.rangeCardinalX = atoi(lpch);
-            }
+            getEditBoxContent(hwndDlg, IDC_CARDINALX, &config.rangeCardinalX);
             break;
 
         case IDC_CARDINALY:
-            if (Edit_GetModify(hwndDlg)) {
-                char lpch;
-                Edit_GetText(hwndDlg, &lpch, 4);
-                config.rangeCardinalY = atoi(lpch);
-            }
+            getEditBoxContent(hwndDlg, IDC_CARDINALY, &config.rangeCardinalY);
             break;
 
         case IDC_DIAGONALX:
-            if (Edit_GetModify(hwndDlg)) {
-                char lpch;
-                Edit_GetText(hwndDlg, &lpch, 4);
-                config.rangeDiagonalX = atoi(lpch);
-            }
+            getEditBoxContent(hwndDlg, IDC_DIAGONALX, &config.rangeDiagonalX);
             break;
 
         case IDC_DIAGONALY:
-            if (Edit_GetModify(hwndDlg)) {
-                char lpch;
-                Edit_GetText(hwndDlg, &lpch, 4);
-                config.rangeDiagonalY = atoi(lpch);
-            }
+            getEditBoxContent(hwndDlg, IDC_DIAGONALY, &config.rangeDiagonalY);
             break;
         }
 
@@ -73,4 +59,13 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 void OpenDialog(HINSTANCE hinst, HWND parent)
 {
     DialogBox(hinst, MAKEINTRESOURCE(IDD_DIALOG1), parent, DlgProc);
+}
+
+void getEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
+    hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
+    if (Edit_GetModify(hDlgItem)) {
+        char lpch[4];
+        Edit_GetText(hDlgItem, &lpch, sizeof(lpch));
+        returnVariable = atoi(lpch);
+    }
 }

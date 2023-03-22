@@ -94,8 +94,6 @@ void DInputInit(HINSTANCE hinst, HWND hwnd) {
 		fflush(fptr);
 		fclose(fptr);
 	}
-
-	loadConfig();
 }
 
 void DInputGetKeys(HINSTANCE hinst, HWND hwnd) {
