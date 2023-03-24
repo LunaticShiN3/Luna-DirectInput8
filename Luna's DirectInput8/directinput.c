@@ -4,7 +4,6 @@
 #include <shlwapi.h>
 
 IDirectInput8A* interfacePointer;
-LPDIRECTINPUTDEVICE8A lpdiKeyboard;
 FILE* fptr;
 errno_t err;
 char filePath[MAX_PATH];

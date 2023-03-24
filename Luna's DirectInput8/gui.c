@@ -3,50 +3,129 @@
 #include "resource.h"
 #include "config.h"
 #include <windowsx.h>
+#include <shlwapi.h>
 
 HWND hDlgItem;
+HWND parentVariable;
 
 BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    FILE* fptr;
+    errno_t err;
+    char filePath[MAX_PATH];
+
     switch (message)
     {
     case WM_INITDIALOG:
+        IDirectInputDevice8_Unacquire(lpdiKeyboard);
+        HRESULT result = IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, hwndDlg, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
+        result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+        resetButtonLabels(hwndDlg);
         break;
 
     case WM_CLOSE:
         loadConfig();
         EndDialog(hwndDlg, 0);
+        IDirectInputDevice8_Unacquire(lpdiKeyboard);
+        IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+        IDirectInputDevice8_Acquire(lpdiKeyboard);
         break;
 
     case WM_COMMAND:
+        if (HIWORD(wParam) == EN_UPDATE) {
+            switch (LOWORD(wParam))
+            {
+                case IDC_CARDINALX:
+                    getEditBoxContent(hwndDlg, IDC_CARDINALX, &config.rangeCardinalX);
+                    break;
+                case IDC_CARDINALY:
+                    getEditBoxContent(hwndDlg, IDC_CARDINALY, &config.rangeCardinalY);
+                    break;
+                case IDC_DIAGONALX:
+                    getEditBoxContent(hwndDlg, IDC_DIAGONALX, &config.rangeDiagonalX);
+                    break;
+                case IDC_DIAGONALY:
+                    getEditBoxContent(hwndDlg, IDC_DIAGONALY, &config.rangeDiagonalY);
+                    break;
+            }
+        }
         switch (wParam)
         {
         case IDCANCEL:
             loadConfig();
             EndDialog(hwndDlg, 0);
+            IDirectInputDevice8_Unacquire(lpdiKeyboard);
+            IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+            IDirectInputDevice8_Acquire(lpdiKeyboard);
             break;
         case IDOK:
             saveConfig();
             EndDialog(hwndDlg, 0);
+            IDirectInputDevice8_Unacquire(lpdiKeyboard);
+            HRESULT result = IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+            result = IDirectInputDevice8_Acquire(lpdiKeyboard);
             break;
         case IDC_RESTOREDEFAULTS:
             restoreDefaults();
+            resetButtonLabels(hwndDlg);
             break;
 
-        case IDC_CARDINALX:
-            getEditBoxContent(hwndDlg, IDC_CARDINALX, &config.rangeCardinalX);
+        case IDC_ABUTTON:
+            getConfigKey(hwndDlg, IDC_ABUTTON, &config.keybindA);
+            break;
+        case IDC_BBUTTON:
+            getConfigKey(hwndDlg, IDC_BBUTTON, &config.keybindB);
+            break;
+        case IDC_START:
+            getConfigKey(hwndDlg, IDC_START, &config.keybindStart);
+            break;
+        case IDC_LTRIG:
+            getConfigKey(hwndDlg, IDC_LTRIG, &config.keybindL);
+            break;
+        case IDC_ZTRIG:
+            getConfigKey(hwndDlg, IDC_ZTRIG, &config.keybindZ);
+            break;
+        case IDC_RTRIG:
+            getConfigKey(hwndDlg, IDC_RTRIG, &config.keybindR);
             break;
 
-        case IDC_CARDINALY:
-            getEditBoxContent(hwndDlg, IDC_CARDINALY, &config.rangeCardinalY);
+        case IDC_ANALOGLEFT:
+            getConfigKey(hwndDlg, IDC_ANALOGLEFT, &config.keybindLeft);
+            break;
+        case IDC_ANALOGRIGHT:
+            getConfigKey(hwndDlg, IDC_ANALOGRIGHT, &config.keybindRight);
+            break;
+        case IDC_ANALOGUP:
+            getConfigKey(hwndDlg, IDC_ANALOGUP, &config.keybindUp);
+            break;
+        case IDC_ANALOGDOWN:
+            getConfigKey(hwndDlg, IDC_ANALOGDOWN, &config.keybindDown);
             break;
 
-        case IDC_DIAGONALX:
-            getEditBoxContent(hwndDlg, IDC_DIAGONALX, &config.rangeDiagonalX);
+        case IDC_CLEFT:
+            getConfigKey(hwndDlg, IDC_CLEFT, &config.keybindCLeft);
+            break;
+        case IDC_CRIGHT:
+            getConfigKey(hwndDlg, IDC_CRIGHT, &config.keybindCRight);
+            break;
+        case IDC_CUP:
+            getConfigKey(hwndDlg, IDC_CUP, &config.keybindCUp);
+            break;
+        case IDC_CDOWN:
+            getConfigKey(hwndDlg, IDC_CDOWN, &config.keybindCDown);
             break;
 
-        case IDC_DIAGONALY:
-            getEditBoxContent(hwndDlg, IDC_DIAGONALY, &config.rangeDiagonalY);
+        case IDC_DPADLEFT:
+            getConfigKey(hwndDlg, IDC_DPADLEFT, &config.keybindDpadLeft);
+            break;
+        case IDC_DPADRIGHT:
+            getConfigKey(hwndDlg, IDC_DPADRIGHT, &config.keybindDpadRight);
+            break;
+        case IDC_DPADUP:
+            getConfigKey(hwndDlg, IDC_DPADUP, &config.keybindDpadUp);
+            break;
+        case IDC_DPADDOWN:
+            getConfigKey(hwndDlg, IDC_DPADDOWN, &config.keybindDpadDown);
             break;
         }
 
@@ -58,14 +137,80 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 void OpenDialog(HINSTANCE hinst, HWND parent)
 {
+    parentVariable = parent;
     DialogBox(hinst, MAKEINTRESOURCE(IDD_DIALOG1), parent, DlgProc);
 }
 
 void getEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
+    char lpch[4];
     hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
-    if (Edit_GetModify(hDlgItem)) {
-        char lpch[4];
-        Edit_GetText(hDlgItem, &lpch, sizeof(lpch));
-        returnVariable = atoi(lpch);
+    GetWindowTextA(hDlgItem, &lpch, sizeof(lpch));
+    *returnVariable = atoi(lpch);
+    if (*returnVariable > 127) {
+        *returnVariable = 127;
+        setEditBoxContent(hwndDlg, nIDDlgItem, *returnVariable);
     }
+}
+
+void getConfigKey(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
+    int i, j;
+    for (j = 0; j < 100; j++) {
+        IDirectInputDevice8_GetDeviceState(lpdiKeyboard, (sizeof(deviceState)), (LPVOID*)&deviceState);
+        for (i = 0; i < sizeof(deviceState); i++) {
+            if (deviceState[i] >> 7) {
+                *returnVariable = i;
+                setButtonLabel(hwndDlg, nIDDlgItem, *returnVariable);
+                break;
+            }
+        }
+        if (i < sizeof(deviceState)) {
+            break;
+        }
+        Sleep(50);
+    }
+}
+
+void setButtonLabel(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
+    dips.diph.dwSize = sizeof(dips);
+    dips.diph.dwHeaderSize = sizeof(diph);
+    dips.diph.dwHow = DIPH_BYOFFSET;
+
+    hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
+    dips.diph.dwObj = returnVariable;
+    IDirectInputDevice8_GetProperty(lpdiKeyboard, DIPROP_KEYNAME, &dips);
+    Button_SetText(hDlgItem, dips.wsz);
+}
+
+void setEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
+    char lpch[4];
+    hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
+    Edit_LimitText(hDlgItem, 3);
+    _itoa_s(returnVariable, lpch, sizeof(lpch), 10);
+    SetWindowTextA(hDlgItem, lpch);
+}
+
+void resetButtonLabels(HWND hwndDlg) {
+    setEditBoxContent(hwndDlg, IDC_CARDINALX, config.rangeCardinalX);
+    setEditBoxContent(hwndDlg, IDC_CARDINALY, config.rangeCardinalY);
+    setEditBoxContent(hwndDlg, IDC_DIAGONALX, config.rangeDiagonalX);
+    setEditBoxContent(hwndDlg, IDC_DIAGONALY, config.rangeDiagonalY);
+
+    setButtonLabel(hwndDlg, IDC_ABUTTON, config.keybindA);
+    setButtonLabel(hwndDlg, IDC_BBUTTON, config.keybindB);
+    setButtonLabel(hwndDlg, IDC_START, config.keybindStart);
+    setButtonLabel(hwndDlg, IDC_LTRIG, config.keybindL);
+    setButtonLabel(hwndDlg, IDC_ZTRIG, config.keybindZ);
+    setButtonLabel(hwndDlg, IDC_RTRIG, config.keybindR);
+    setButtonLabel(hwndDlg, IDC_ANALOGLEFT, config.keybindLeft);
+    setButtonLabel(hwndDlg, IDC_ANALOGRIGHT, config.keybindRight);
+    setButtonLabel(hwndDlg, IDC_ANALOGUP, config.keybindUp);
+    setButtonLabel(hwndDlg, IDC_ANALOGDOWN, config.keybindDown);
+    setButtonLabel(hwndDlg, IDC_CLEFT, config.keybindCLeft);
+    setButtonLabel(hwndDlg, IDC_CRIGHT, config.keybindCRight);
+    setButtonLabel(hwndDlg, IDC_CUP, config.keybindCUp);
+    setButtonLabel(hwndDlg, IDC_CDOWN, config.keybindCDown);
+    setButtonLabel(hwndDlg, IDC_DPADLEFT, config.keybindDpadLeft);
+    setButtonLabel(hwndDlg, IDC_DPADRIGHT, config.keybindDpadRight);
+    setButtonLabel(hwndDlg, IDC_DPADUP, config.keybindDpadUp);
+    setButtonLabel(hwndDlg, IDC_DPADDOWN, config.keybindDpadDown);
 }

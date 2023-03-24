@@ -6,28 +6,28 @@
 #define IDC_CARDINALX                   1002
 #define IDC_CARDINALY                   1003
 #define IDC_DIAGONALX                   1004
-#define IDC_EDIT4                       1005
 #define IDC_DIAGONALY                   1005
 #define IDC_RESTOREDEFAULTS             1012
 #define IDC_LIST3                       1035
-#define IDC_BUTTON2                     1036
-#define IDC_BUTTON3                     1037
-#define IDC_BUTTON4                     1038
-#define IDC_BUTTON5                     1039
-#define IDC_BUTTON6                     1040
-#define IDC_BUTTON7                     1041
-#define IDC_BUTTON8                     1042
-#define IDC_BUTTON9                     1043
-#define IDC_BUTTON10                    1044
-#define IDC_BUTTON11                    1045
-#define IDC_BUTTON12                    1046
-#define IDC_BUTTON13                    1047
-#define IDC_BUTTON14                    1048
-#define IDC_BUTTON15                    1049
-#define IDC_BUTTON16                    1050
-#define IDC_BUTTON17                    1051
-#define IDC_BUTTON18                    1052
+#define IDC_ABUTTON                     1036
+#define IDC_LTRIG                       1037
+#define IDC_BBUTTON                     1038
+#define IDC_ZTRIG                       1039
+#define IDC_START                       1040
+#define IDC_RTRIG                       1041
+#define IDC_ANALOGLEFT                  1042
+#define IDC_ANALOGRIGHT                 1043
+#define IDC_ANALOGUP                    1044
+#define IDC_ANALOGDOWN                  1045
+#define IDC_CLEFT                       1046
+#define IDC_CRIGHT                      1047
+#define IDC_CUP                         1048
+#define IDC_CDOWN                       1049
+#define IDC_DPADLEFT                    1050
+#define IDC_DPADRIGHT                   1051
+#define IDC_DPADUP                      1052
 #define IDC_BUTTON19                    1053
+#define IDC_DPADDOWN                    1053
 
 // Next default values for new objects
 // 

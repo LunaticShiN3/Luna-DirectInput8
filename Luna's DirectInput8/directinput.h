@@ -11,5 +11,6 @@ void DInputInit(HINSTANCE hinst, HWND hwnd);
 void DInputGetKeys(HINSTANCE hinst, HWND hwnd);
 
 byte deviceState[256];
+LPDIRECTINPUTDEVICE8A lpdiKeyboard;
 
 #endif

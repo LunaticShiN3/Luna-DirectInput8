@@ -133,6 +133,8 @@ EXPORT void CALL InitiateControllers(HWND hMainWindow, CONTROL Controls[4])
     Controls[0].Present = TRUE;
 
     hMainWindowVariable = hMainWindow;
+
+    DInputInit(hModuleVariable, hMainWindowVariable);
 }
 
 EXPORT void CALL RomClosed(void) {
@@ -140,7 +142,7 @@ EXPORT void CALL RomClosed(void) {
 }
 
 EXPORT void CALL RomOpen(void) {
-    DInputInit(hModuleVariable, hMainWindowVariable);
+    //idk?
 }
 
 /*EXPORT void CALL WM_KeyDown(WPARAM wParam, LPARAM lParam) {
