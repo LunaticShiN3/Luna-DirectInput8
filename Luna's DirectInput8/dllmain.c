@@ -24,6 +24,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
         loadConfig();
+        break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
@@ -33,7 +34,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 }
 
 EXPORT void CALL CloseDLL(void) {
-    //stuff here later
+    IDirectInputDevice8_Unacquire(lpdiKeyboard);
 }
 
 EXPORT void CALL DllAbout(HWND hParent) {

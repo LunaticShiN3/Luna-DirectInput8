@@ -5,9 +5,14 @@
 #include <windowsx.h>
 #include <shlwapi.h>
 #include <stdlib.h>
+#include <shellapi.h>
 
 HWND hDlgItem;
 HWND parentVariable;
+int selectedIndex;
+int selectedKey;
+float selectedX;
+float selectedY;
 
 BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -42,6 +47,7 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
             LvItem.iItem = i;
             SendMessageA(hDlgItem, LVM_INSERTITEMA, 0, (LPARAM)&LvItem);
         }
+        SendMessageA(hDlgItem, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_FULLROWSELECT);
 
         resetButtonLabels(hwndDlg);
         break;
@@ -52,6 +58,19 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
         IDirectInputDevice8_Unacquire(lpdiKeyboard);
         IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
         IDirectInputDevice8_Acquire(lpdiKeyboard);
+        break;
+
+    case WM_NOTIFY:
+        switch (((LPNMHDR)lParam)->code)
+        {
+            case NM_CLICK:
+                hDlgItem = GetDlgItem(hwndDlg, IDC_MODIFIERS);
+                selectedIndex = SendMessage(hDlgItem, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
+                setButtonLabel(hwndDlg, IDC_MODIFIERKEY, config.modifiers[selectedIndex].keybind);
+                setFloatEditBoxContent(hwndDlg, IDC_MODIFIERX, &config.modifiers[selectedIndex].multiplierX);
+                setFloatEditBoxContent(hwndDlg, IDC_MODIFIERY, &config.modifiers[selectedIndex].multiplierY);
+                break;
+        }
         break;
 
     case WM_COMMAND:
@@ -69,6 +88,13 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
                     break;
                 case IDC_DIAGONALY:
                     getEditBoxContent(hwndDlg, IDC_DIAGONALY, &config.rangeDiagonalY);
+                    break;
+
+                case IDC_MODIFIERX:
+                    getFloatEditBoxContent(hwndDlg, IDC_MODIFIERX, &selectedX);
+                    break;
+                case IDC_MODIFIERY:
+                    getFloatEditBoxContent(hwndDlg, IDC_MODIFIERY, &selectedY);
                     break;
             }
         }
@@ -94,7 +120,7 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
             break;
 
         case IDC_HELP:
-            system("START https://sites.google.com/view/shurislibrary/luna-dinput8");
+            ShellExecuteA(0, 0, "http://sites.google.com/view/shurislibrary/luna-dinput8", 0, 0, SW_HIDE);
             break;
 
 
@@ -155,6 +181,30 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
         case IDC_DPADDOWN:
             getConfigKey(hwndDlg, IDC_DPADDOWN, &config.keybindDpadDown);
             break;
+
+        case IDC_MODIFIERKEY:
+            getConfigKey(hwndDlg, IDC_MODIFIERKEY, &selectedKey);
+            break;
+        case IDC_MODIFIERADD:
+            hDlgItem = GetDlgItem(hwndDlg, IDC_MODIFIERS);
+            selectedIndex = SendMessage(hDlgItem, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
+            if (selectedIndex >= 0) {
+                config.modifiers[selectedIndex].keybind = selectedKey;
+                config.modifiers[selectedIndex].multiplierX = selectedX;
+                config.modifiers[selectedIndex].multiplierY = selectedY;
+                setListRow(hwndDlg, selectedIndex, selectedKey, selectedX, selectedY);
+            }
+            break;
+        case IDC_MODIFIERCLEAR:
+            hDlgItem = GetDlgItem(hwndDlg, IDC_MODIFIERS);
+            selectedIndex = SendMessage(hDlgItem, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
+            if (selectedIndex >= 0) {
+                config.modifiers[selectedIndex].keybind = 0;
+                config.modifiers[selectedIndex].multiplierX = 0;
+                config.modifiers[selectedIndex].multiplierY = 0;
+                setListRow(hwndDlg, selectedIndex, 0, 0, 0);
+            }
+            break;
         }
 
     default:
@@ -177,6 +227,17 @@ void getEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
     if (*returnVariable > 127) {
         *returnVariable = 127;
         setEditBoxContent(hwndDlg, nIDDlgItem, *returnVariable);
+    }
+}
+
+void getFloatEditBoxContent(HWND hwndDlg, int nIDDlgItem, float* returnVariable) {
+    char lpch[32];
+    hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
+    GetWindowTextA(hDlgItem, &lpch, sizeof(lpch));
+    *returnVariable = atof(lpch);
+    if (*returnVariable > 1.0) {
+        *returnVariable = 1.0;
+        setFloatEditBoxContent(hwndDlg, nIDDlgItem, returnVariable);
     }
 }
 
@@ -214,6 +275,15 @@ void setEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
     hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
     Edit_LimitText(hDlgItem, 3);
     _itoa_s(returnVariable, lpch, sizeof(lpch), 10);
+    SetWindowTextA(hDlgItem, lpch);
+}
+
+void setFloatEditBoxContent(HWND hwndDlg, int nIDDlgItem, float* returnVariable) {
+    char lpch[32];
+    errno_t err;
+    hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
+    Edit_LimitText(hDlgItem, 8);
+    err = _gcvt_s(lpch, sizeof(lpch), *returnVariable, 7);
     SetWindowTextA(hDlgItem, lpch);
 }
 
