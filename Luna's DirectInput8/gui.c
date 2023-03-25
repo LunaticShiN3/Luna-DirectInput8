@@ -4,6 +4,7 @@
 #include "config.h"
 #include <windowsx.h>
 #include <shlwapi.h>
+#include <stdlib.h>
 
 HWND hDlgItem;
 HWND parentVariable;
@@ -20,6 +21,28 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
         IDirectInputDevice8_Unacquire(lpdiKeyboard);
         HRESULT result = IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, hwndDlg, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
         result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+
+        hDlgItem = GetDlgItem(hwndDlg, IDC_MODIFIERS);
+        memset(&LvColumn, 0, sizeof(LvColumn));
+        LvColumn.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+        LvColumn.cx = 0x28;
+        LvColumn.pszText = "Key";
+        LvColumn.cx = 0x42;
+        SendMessageA(hDlgItem, LVM_INSERTCOLUMNA, 0, (LPARAM)&LvColumn);
+        LvColumn.pszText = "X";
+        SendMessageA(hDlgItem, LVM_INSERTCOLUMNA, 1, (LPARAM)&LvColumn);
+        LvColumn.pszText = "Y";
+        SendMessageA(hDlgItem, LVM_INSERTCOLUMNA, 2, (LPARAM)&LvColumn);
+        LvItem.mask = LVIF_TEXT;
+        LvItem.cchTextMax = 256;
+        LvItem.pszText = "Init";
+        LvItem.iSubItem = 0;
+        int i;
+        for (i = 0; i < 50; i++) {
+            LvItem.iItem = i;
+            SendMessageA(hDlgItem, LVM_INSERTITEMA, 0, (LPARAM)&LvItem);
+        }
+
         resetButtonLabels(hwndDlg);
         break;
 
@@ -69,6 +92,11 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
             restoreDefaults();
             resetButtonLabels(hwndDlg);
             break;
+
+        case IDC_HELP:
+            system("START https://sites.google.com/view/shurislibrary/luna-dinput8");
+            break;
+
 
         case IDC_ABUTTON:
             getConfigKey(hwndDlg, IDC_ABUTTON, &config.keybindA);
@@ -177,8 +205,8 @@ void setButtonLabel(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
 
     hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
     dips.diph.dwObj = returnVariable;
-    IDirectInputDevice8_GetProperty(lpdiKeyboard, DIPROP_KEYNAME, &dips);
-    Button_SetText(hDlgItem, dips.wsz);
+    IDirectInputDevice8_GetProperty(lpdiKeyboard, DIPROP_KEYNAME, &dips); //this bich refuses to be ascii so gotta use unicode functions
+    SetWindowTextW(hDlgItem, dips.wsz);
 }
 
 void setEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
@@ -187,6 +215,37 @@ void setEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
     Edit_LimitText(hDlgItem, 3);
     _itoa_s(returnVariable, lpch, sizeof(lpch), 10);
     SetWindowTextA(hDlgItem, lpch);
+}
+
+void setListRow(HWND hwndDlg, int Index, int Key, float multX, float multY) {
+    char lpch[sizeof(dips.wsz)];
+    hDlgItem = GetDlgItem(hwndDlg, IDC_MODIFIERS);
+
+    LvItem.iItem = Index;
+    LvItem.iSubItem = 0;
+    if (Key != 0) {
+        dips.diph.dwSize = sizeof(dips);
+        dips.diph.dwHeaderSize = sizeof(diph);
+        dips.diph.dwHow = DIPH_BYOFFSET;
+        dips.diph.dwObj = Key;
+        IDirectInputDevice8_GetProperty(lpdiKeyboard, DIPROP_KEYNAME, &dips);
+        LvItem.pszText = dips.wsz; //this bich refuses to be ascii so gotta use unicode functions
+        SendMessageW(hDlgItem, LVM_SETITEMW, 0, (LPARAM)&LvItem);
+    }
+    else {
+        LvItem.pszText = "Not set";
+        SendMessageA(hDlgItem, LVM_SETITEMA, 0, (LPARAM)&LvItem);
+    }
+
+    LvItem.iSubItem = 1;
+    _gcvt_s(lpch, sizeof(lpch), multX, 5);
+    LvItem.pszText = lpch;
+    SendMessageA(hDlgItem, LVM_SETITEMA, 0, (LPARAM)&LvItem);
+
+    LvItem.iSubItem = 2;
+    _gcvt_s(lpch, sizeof(lpch), multY, 5);
+    LvItem.pszText = lpch;
+    SendMessageA(hDlgItem, LVM_SETITEMA, 0, (LPARAM)&LvItem);
 }
 
 void resetButtonLabels(HWND hwndDlg) {
@@ -213,4 +272,9 @@ void resetButtonLabels(HWND hwndDlg) {
     setButtonLabel(hwndDlg, IDC_DPADRIGHT, config.keybindDpadRight);
     setButtonLabel(hwndDlg, IDC_DPADUP, config.keybindDpadUp);
     setButtonLabel(hwndDlg, IDC_DPADDOWN, config.keybindDpadDown);
+
+    int i;
+    for (i = 0; i < 50; i++) {
+        setListRow(hwndDlg, i, config.modifiers[i].keybind, config.modifiers[i].multiplierX, config.modifiers[i].multiplierY);
+    }
 }
