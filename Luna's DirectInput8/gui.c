@@ -250,6 +250,9 @@ void getFloatEditBoxContent(HWND hwndDlg, int nIDDlgItem, float* returnVariable)
     hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
     GetWindowTextA(hDlgItem, &lpch, sizeof(lpch));
     *returnVariable = atof(lpch);
+    if (*returnVariable < 0) {
+        *returnVariable = (0.0 - *returnVariable);
+    }
     if (*returnVariable > 1.0) {
         *returnVariable = 1.0;
         setFloatEditBoxContent(hwndDlg, nIDDlgItem, returnVariable);
