@@ -73,10 +73,7 @@ void DInputInit(HINSTANCE hinst, HWND hwnd) {
 		}
 	}
 
-	result = DIERR_OTHERAPPHASPRIO;
-	while (result == DIERR_OTHERAPPHASPRIO) {
 		result = IDirectInputDevice8_Acquire(lpdiKeyboard); //Acquires input device
-	}
 
 	if (fptr != 0) {
 		switch (result) {
