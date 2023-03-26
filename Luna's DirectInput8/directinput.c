@@ -102,6 +102,7 @@ void DInputGetKeys(HINSTANCE hinst, HWND hwnd) {
 
 	if (lpdiKeyboard != NULL) {
 		HRESULT result = IDirectInputDevice8_GetDeviceState(lpdiKeyboard, (sizeof(deviceState)), (LPVOID*)&deviceState);
+		deviceState[0] = 0;
 
 		if (GetForegroundWindow() == hwnd) {
 			if (result == DIERR_INPUTLOST) {

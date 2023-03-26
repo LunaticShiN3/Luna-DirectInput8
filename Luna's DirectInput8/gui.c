@@ -235,10 +235,10 @@ void getEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
     char lpch[4];
     hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
     GetWindowTextA(hDlgItem, &lpch, sizeof(lpch));
-    *returnVariable = atoi(lpch);
-    if (*returnVariable > 127) {
-        *returnVariable = 127;
-        setEditBoxContent(hwndDlg, nIDDlgItem, *returnVariable);
+    returnVariable = atoi(lpch);
+    if (returnVariable > 127) {
+        returnVariable = 127;
+        setEditBoxContent(hwndDlg, nIDDlgItem, returnVariable);
     }
 }
 
@@ -257,6 +257,7 @@ void getConfigKey(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
     int i, j;
     for (j = 0; j < 100; j++) {
         IDirectInputDevice8_GetDeviceState(lpdiKeyboard, (sizeof(deviceState)), (LPVOID*)&deviceState);
+        deviceState[0] = 0;
         for (i = 0; i < sizeof(deviceState); i++) {
             if (deviceState[i] >> 7) {
                 *returnVariable = i;
@@ -271,7 +272,7 @@ void getConfigKey(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
     }
 }
 
-void setButtonLabel(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
+void setButtonLabel(HWND hwndDlg, int nIDDlgItem, byte returnVariable) {
     dips.diph.dwSize = sizeof(dips);
     dips.diph.dwHeaderSize = sizeof(diph);
     dips.diph.dwHow = DIPH_BYOFFSET;
@@ -282,7 +283,7 @@ void setButtonLabel(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
     SetWindowTextW(hDlgItem, dips.wsz);
 }
 
-void setEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
+void setEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte returnVariable) {
     char lpch[4];
     hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
     Edit_LimitText(hDlgItem, 3);

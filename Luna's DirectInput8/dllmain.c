@@ -117,7 +117,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys) {
     }
 
     for (int i = 0; i < sizeof(config.modifiers) / sizeof(Modifier); i++) {
-        if (deviceState[config.modifiers[i].keybind] >> 7) {
+        if ((config.modifiers[i].keybind != 0) && (deviceState[config.modifiers[i].keybind] >> 7)) {
             Keys->Y_AXIS = (float)Keys->Y_AXIS * config.modifiers[i].multiplierX; //X and Y axis are swapped because of course they are????
             Keys->X_AXIS = (float)Keys->X_AXIS * config.modifiers[i].multiplierY;
         }
