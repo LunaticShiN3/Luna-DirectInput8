@@ -25,7 +25,10 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_INITDIALOG:
         IDirectInputDevice8_Unacquire(lpdiKeyboard);
         HRESULT result = IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, hwndDlg, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
-        result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+        result = DIERR_OTHERAPPHASPRIO;
+        while (result == DIERR_OTHERAPPHASPRIO) {
+            result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+        }
 
         hDlgItem = GetDlgItem(hwndDlg, IDC_MODIFIERS);
         memset(&LvColumn, 0, sizeof(LvColumn));
@@ -57,7 +60,10 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
         EndDialog(hwndDlg, 0);
         IDirectInputDevice8_Unacquire(lpdiKeyboard);
         IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-        IDirectInputDevice8_Acquire(lpdiKeyboard);
+        result = DIERR_OTHERAPPHASPRIO;
+        while (result == DIERR_OTHERAPPHASPRIO) {
+            result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+        }
         break;
 
     case WM_NOTIFY:
@@ -105,14 +111,20 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
             EndDialog(hwndDlg, 0);
             IDirectInputDevice8_Unacquire(lpdiKeyboard);
             IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-            IDirectInputDevice8_Acquire(lpdiKeyboard);
+            result = DIERR_OTHERAPPHASPRIO;
+            while (result == DIERR_OTHERAPPHASPRIO) {
+                result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+            }
             break;
         case IDOK:
             saveConfig();
             EndDialog(hwndDlg, 0);
             IDirectInputDevice8_Unacquire(lpdiKeyboard);
             HRESULT result = IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-            result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+            result = DIERR_OTHERAPPHASPRIO;
+            while (result == DIERR_OTHERAPPHASPRIO) {
+                result = IDirectInputDevice8_Acquire(lpdiKeyboard); //Acquires input device
+            }
             break;
         case IDC_RESTOREDEFAULTS:
             restoreDefaults();

@@ -73,7 +73,10 @@ void DInputInit(HINSTANCE hinst, HWND hwnd) {
 		}
 	}
 
-	result= IDirectInputDevice8_Acquire(lpdiKeyboard); //Acquires input device
+	result = DIERR_OTHERAPPHASPRIO;
+	while (result == DIERR_OTHERAPPHASPRIO) {
+		result = IDirectInputDevice8_Acquire(lpdiKeyboard); //Acquires input device
+	}
 
 	if (fptr != 0) {
 		switch (result) {
@@ -102,7 +105,10 @@ void DInputGetKeys(HINSTANCE hinst, HWND hwnd) {
 
 		if (GetForegroundWindow() == hwnd) {
 			if (result == DIERR_INPUTLOST) {
-				result = IDirectInputDevice8_Acquire(lpdiKeyboard); //Re-acquires dinput device after lost focus.
+				result = DIERR_OTHERAPPHASPRIO;
+				while (result == DIERR_OTHERAPPHASPRIO) {
+					result = IDirectInputDevice8_Acquire(lpdiKeyboard); //Re-acquires dinput device after lost focus.
+				}
 			}
 		}
 	}

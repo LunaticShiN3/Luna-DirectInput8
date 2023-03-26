@@ -37,8 +37,9 @@ void loadConfig(void) {
 		fclose(cptr);
 	}
 
-	if (config.configVersion != 0x0100);
-	restoreDefaults();
+	if (config.configVersion != 0x0100) {
+		restoreDefaults();
+	}
 }
 
 void restoreDefaults(void) {
