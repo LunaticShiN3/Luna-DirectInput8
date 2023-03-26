@@ -72,6 +72,9 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
             case NM_CLICK:
                 hDlgItem = GetDlgItem(hwndDlg, IDC_MODIFIERS);
                 selectedIndex = SendMessage(hDlgItem, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
+                selectedKey = config.modifiers[selectedIndex].keybind;
+                selectedX = config.modifiers[selectedIndex].multiplierX;
+                selectedY = config.modifiers[selectedIndex].multiplierY;
                 setButtonLabel(hwndDlg, IDC_MODIFIERKEY, config.modifiers[selectedIndex].keybind);
                 setFloatEditBoxContent(hwndDlg, IDC_MODIFIERX, &config.modifiers[selectedIndex].multiplierX);
                 setFloatEditBoxContent(hwndDlg, IDC_MODIFIERY, &config.modifiers[selectedIndex].multiplierY);
