@@ -143,7 +143,16 @@ EXPORT void CALL RomClosed(void) {
 }
 
 EXPORT void CALL RomOpen(void) {
-    //idk?
+    IDirectInputDevice8_Unacquire(lpdiKeyboard);
+    IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, hMainWindowVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+    int i;
+    for (i = 0; i < 100; i++) {
+        HRESULT result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+        if (result != DIERR_OTHERAPPHASPRIO) {
+            break;
+        }
+        Sleep(50);
+    }
 }
 
 /*EXPORT void CALL WM_KeyDown(WPARAM wParam, LPARAM lParam) {

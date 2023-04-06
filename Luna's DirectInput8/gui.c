@@ -25,9 +25,13 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_INITDIALOG:
         IDirectInputDevice8_Unacquire(lpdiKeyboard);
         HRESULT result = IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, hwndDlg, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
-        result = DIERR_OTHERAPPHASPRIO;
-        while (result == DIERR_OTHERAPPHASPRIO) {
-            result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+        int i;
+        for (i = 0; i < 100; i++) {
+            HRESULT result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+            if (result != DIERR_OTHERAPPHASPRIO) {
+                break;
+            }
+            Sleep(50);
         }
 
         hDlgItem = GetDlgItem(hwndDlg, IDC_MODIFIERS);
@@ -60,9 +64,13 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
         EndDialog(hwndDlg, 0);
         IDirectInputDevice8_Unacquire(lpdiKeyboard);
         IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-        result = DIERR_OTHERAPPHASPRIO;
-        while (result == DIERR_OTHERAPPHASPRIO) {
-            result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+        int i;
+        for (i = 0; i < 100; i++) {
+            HRESULT result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+            if (result != DIERR_OTHERAPPHASPRIO) {
+                break;
+            }
+            Sleep(50);
         }
         break;
 
@@ -114,9 +122,13 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
             EndDialog(hwndDlg, 0);
             IDirectInputDevice8_Unacquire(lpdiKeyboard);
             IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-            result = DIERR_OTHERAPPHASPRIO;
-            while (result == DIERR_OTHERAPPHASPRIO) {
-                result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+            int i;
+            for (i = 0; i < 100; i++) {
+                HRESULT result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+                if (result != DIERR_OTHERAPPHASPRIO) {
+                    break;
+                }
+                Sleep(50);
             }
             break;
         case IDOK:
@@ -124,9 +136,13 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
             EndDialog(hwndDlg, 0);
             IDirectInputDevice8_Unacquire(lpdiKeyboard);
             HRESULT result = IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-            result = DIERR_OTHERAPPHASPRIO;
-            while (result == DIERR_OTHERAPPHASPRIO) {
-                result = IDirectInputDevice8_Acquire(lpdiKeyboard); //Acquires input device
+            int i;
+            for (i = 0; i < 100; i++) {
+                HRESULT result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+                if (result != DIERR_OTHERAPPHASPRIO) {
+                    break;
+                }
+                Sleep(50);
             }
             break;
         case IDC_RESTOREDEFAULTS:

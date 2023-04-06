@@ -103,9 +103,13 @@ void DInputGetKeys(HINSTANCE hinst, HWND hwnd) {
 
 		if (GetForegroundWindow() == hwnd) {
 			if (result == DIERR_INPUTLOST) {
-				result = DIERR_OTHERAPPHASPRIO;
-				while (result == DIERR_OTHERAPPHASPRIO) {
-					result = IDirectInputDevice8_Acquire(lpdiKeyboard); //Re-acquires dinput device after lost focus.
+				int i;
+				for (i = 0; i < 100; i++) {
+					HRESULT result = IDirectInputDevice8_Acquire(lpdiKeyboard);
+					if (result != DIERR_OTHERAPPHASPRIO) {
+						break;
+					}
+					Sleep(50);
 				}
 			}
 		}
