@@ -7,7 +7,7 @@ void OpenDialog(HINSTANCE hinst, HWND parent);
 void getEditBoxContent(HWND hWndDlg, int nIDDlgItem, byte* returnVariable);
 void getFloatEditBoxContent(HWND hwndDlg, int nIDDlgItem, float* returnVariable);
 void getConfigKey(HWND hwndDlg, int nIDDlgItem, byte* returnVariable);
-void setButtonLabel(HWND hwndDlg, int nIDDlgItem, byte* returnVariable);
+void setButtonLabel(HWND hwndDlg, int nIDDlgItem, byte returnVariable);
 void setEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable);
 void setFloatEditBoxContent(HWND hwndDlg, int nIDDlgItem, float* returnVariable);
 void resetButtonLabels(HWND hwndDlg);

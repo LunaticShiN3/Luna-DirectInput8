@@ -19,13 +19,13 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
     FILE* fptr;
     errno_t err;
     char filePath[MAX_PATH];
+    int i;
 
     switch (message)
     {
     case WM_INITDIALOG:
         IDirectInputDevice8_Unacquire(lpdiKeyboard);
         HRESULT result = IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, hwndDlg, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
-        int i;
         for (i = 0; i < 100; i++) {
             HRESULT result = IDirectInputDevice8_Acquire(lpdiKeyboard);
             if (result != DIERR_OTHERAPPHASPRIO) {
@@ -49,7 +49,6 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
         LvItem.cchTextMax = 256;
         LvItem.pszText = "Init";
         LvItem.iSubItem = 0;
-        int i;
         for (i = 0; i < 50; i++) {
             LvItem.iItem = i;
             SendMessageA(hDlgItem, LVM_INSERTITEMA, 0, (LPARAM)&LvItem);
@@ -64,7 +63,6 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
         EndDialog(hwndDlg, 0);
         IDirectInputDevice8_Unacquire(lpdiKeyboard);
         IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-        int i;
         for (i = 0; i < 100; i++) {
             HRESULT result = IDirectInputDevice8_Acquire(lpdiKeyboard);
             if (result != DIERR_OTHERAPPHASPRIO) {
@@ -122,7 +120,6 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
             EndDialog(hwndDlg, 0);
             IDirectInputDevice8_Unacquire(lpdiKeyboard);
             IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-            int i;
             for (i = 0; i < 100; i++) {
                 HRESULT result = IDirectInputDevice8_Acquire(lpdiKeyboard);
                 if (result != DIERR_OTHERAPPHASPRIO) {
@@ -136,7 +133,6 @@ BOOL CALLBACK DlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
             EndDialog(hwndDlg, 0);
             IDirectInputDevice8_Unacquire(lpdiKeyboard);
             HRESULT result = IDirectInputDevice8_SetCooperativeLevel(lpdiKeyboard, parentVariable, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-            int i;
             for (i = 0; i < 100; i++) {
                 HRESULT result = IDirectInputDevice8_Acquire(lpdiKeyboard);
                 if (result != DIERR_OTHERAPPHASPRIO) {
@@ -254,9 +250,9 @@ void getEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
     char lpch[4];
     hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
     GetWindowTextA(hDlgItem, &lpch, sizeof(lpch));
-    returnVariable = atoi(lpch);
-    if (returnVariable > 127) {
-        returnVariable = 127;
+    *returnVariable = atoi(lpch);
+    if (*returnVariable > 127) {
+        *returnVariable = 127;
         setEditBoxContent(hwndDlg, nIDDlgItem, returnVariable);
     }
 }
@@ -305,11 +301,11 @@ void setButtonLabel(HWND hwndDlg, int nIDDlgItem, byte returnVariable) {
     SetWindowTextW(hDlgItem, dips.wsz);
 }
 
-void setEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte returnVariable) {
+void setEditBoxContent(HWND hwndDlg, int nIDDlgItem, byte* returnVariable) {
     char lpch[4];
     hDlgItem = GetDlgItem(hwndDlg, nIDDlgItem);
     Edit_LimitText(hDlgItem, 3);
-    _itoa_s(returnVariable, lpch, sizeof(lpch), 10);
+    _itoa_s(*returnVariable, lpch, sizeof(lpch), 10);
     SetWindowTextA(hDlgItem, lpch);
 }
 
@@ -354,10 +350,10 @@ void setListRow(HWND hwndDlg, int Index, int Key, float multX, float multY) {
 }
 
 void resetButtonLabels(HWND hwndDlg) {
-    setEditBoxContent(hwndDlg, IDC_CARDINALX, config.rangeCardinalX);
-    setEditBoxContent(hwndDlg, IDC_CARDINALY, config.rangeCardinalY);
-    setEditBoxContent(hwndDlg, IDC_DIAGONALX, config.rangeDiagonalX);
-    setEditBoxContent(hwndDlg, IDC_DIAGONALY, config.rangeDiagonalY);
+    setEditBoxContent(hwndDlg, IDC_CARDINALX, &config.rangeCardinalX);
+    setEditBoxContent(hwndDlg, IDC_CARDINALY, &config.rangeCardinalY);
+    setEditBoxContent(hwndDlg, IDC_DIAGONALX, &config.rangeDiagonalX);
+    setEditBoxContent(hwndDlg, IDC_DIAGONALY, &config.rangeDiagonalY);
 
     setButtonLabel(hwndDlg, IDC_ABUTTON, config.keybindA);
     setButtonLabel(hwndDlg, IDC_BBUTTON, config.keybindB);
