@@ -2,7 +2,7 @@
 #include "pch.h"
 
 #define PLUGIN_NAME "Luna's DirectInput8"
-#define PLUGIN_VERSION "1.0.2"
+#define PLUGIN_VERSION "1.0.3"
 #define PLUGIN_NAMEVER PLUGIN_NAME " v" PLUGIN_VERSION
 #define PLUGIN_REPO "https://github.com/LunaticShiN3/Luna-DirectInput8"
 
