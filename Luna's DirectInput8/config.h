@@ -69,8 +69,8 @@ static Config defaultConfig = {
 
     .modifiers = {
         {0x2A, 0.2, 0.2},
-        {0x39, 0.87, 0.5},
-        {0x2F, 0.5, 0.87}
+        {0x39, 1, 0.58},
+        {0x2F, 0.58, 1}
     }
 };
 
