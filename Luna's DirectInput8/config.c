@@ -1,47 +1,55 @@
 #include "pch.h"
 #include "config.h"
 #include <shlwapi.h>
+#include <ShlObj.h>
+#include <KnownFolders.h>
 
 FILE* cptr;
 errno_t cfgerr;
-char configPath[MAX_PATH];
+WCHAR configPath[MAX_PATH] = L"";
+
+/**
+ * Returns the path of the config file, creating the containing folders if they don't already exist.
+ */
+LPWSTR getConfigPath(void) {
+    if (configPath[0] == '\0') {
+        PWSTR appDataFolder;
+        WCHAR configDirectory[MAX_PATH] = L"";
+        SHGetKnownFolderPath(&FOLDERID_RoamingAppData, 0, NULL, &appDataFolder);
+        PathCombineW(configDirectory, appDataFolder, L"Luna-Project64\\Config"); //Creates config folder, required for PJ64 1.6 (only when loading?)
+        CoTaskMemFree(appDataFolder);
+        CreateDirectoryW(configDirectory, NULL);
+        PathCombineW(configPath, configDirectory, L"Lunaconfig.bin");
+    }
+    return configPath;
+}
 
 void saveConfig(void) {
-	GetModuleFileNameA(NULL, configPath, sizeof(configPath));
-	PathRemoveFileSpecA(configPath);
-	PathCombineA(configPath, configPath, "Config"); //Creates config folder, required for PJ64 1.6
-	CreateDirectoryA(configPath, NULL);
-	PathCombineA(configPath, configPath, "Lunaconfig.bin"); //Creates or opens config file
-	cfgerr = fopen_s(&cptr, configPath, "wb");
+    cfgerr = _wfopen_s(&cptr, getConfigPath(), L"wb"); //Creates or opens config file
 
-	if (cptr != 0) {
-		fwrite(&config, sizeof(config), 1, cptr);
-		fflush(cptr);
-		fclose(cptr);
-	}
+    if (cptr != 0) {
+        fwrite(&config, sizeof(config), 1, cptr);
+        fflush(cptr);
+        fclose(cptr);
+    }
 }
 
 void loadConfig(void) {
-	GetModuleFileNameA(NULL, configPath, sizeof(configPath));
-	PathRemoveFileSpecA(configPath);
-	PathCombineA(configPath, configPath, "Config"); //Creates config folder, required for PJ64 1.6
-	CreateDirectoryA(configPath, NULL);
-	PathCombineA(configPath, configPath, "Lunaconfig.bin"); //Opens config file to read
-	cfgerr = fopen_s(&cptr, configPath, "rb");
+    cfgerr = _wfopen_s(&cptr, getConfigPath(), L"rb"); //Opens config file to read
 
-	if (cfgerr) {
-		restoreDefaults();
-	}
-	else {
-		fread(&config, sizeof(config), 1, cptr);
-		fclose(cptr);
-	}
+    if (cfgerr) {
+        restoreDefaults();
+    }
+    else {
+        fread(&config, sizeof(config), 1, cptr);
+        fclose(cptr);
+    }
 
-	if (config.configVersion != 0x0100) {
-		restoreDefaults();
-	}
+    if (config.configVersion != 0x0100) {
+        restoreDefaults();
+    }
 }
 
 void restoreDefaults(void) {
-	config = defaultConfig;
+    config = defaultConfig;
 }

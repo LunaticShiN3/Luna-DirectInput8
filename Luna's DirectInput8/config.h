@@ -74,6 +74,7 @@ static Config defaultConfig = {
     }
 };
 
+LPWSTR getConfigPath(void);
 void saveConfig(void);
 void loadConfig(void);
 void restoreDefaults(void);
